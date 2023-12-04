@@ -1,0 +1,38 @@
+@host = http://127.0.0.1:5000
+
+
+### Create a new item
+POST {{host}}/users
+Content-Type: application/json
+
+{
+  "name": "CSIT327",
+  "email": "csit327@cit.edu",
+  "password": "123456"
+}
+
+
+### Read the list
+GET {{host}}/users
+Content-Type: application/json
+
+
+### Read a single item by id
+GET {{host}}/users/3
+Content-Type: application/json
+
+
+### Update an item
+PUT {{host}}/users/2
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "jane.doe@gmail.com",
+  "password": "123456"
+}
+
+
+### Delete an item
+DELETE {{host}}/users/3
+Content-Type: application/json

@@ -1,0 +1,24 @@
+Reference: https://flask.palletsprojects.com/en/3.0.x/
+
+To install python, download and install version 3: https://www.python.org/downloads/windows/
+
+
+To install flask, run the following command in your Visual Studio Code - Terminal:
+$ mkdir myproject
+$ cd myproject
+$ py -3 -m venv .venv
+$ .venv\Scripts\activate
+
+
+To install Flask and its dependencies:
+$ pip install flask
+$ pip install flask-mysqldb
+$ pip install python-dotenv
+
+
+To update the database configuration, copy .env-sample:
+$ cp .env-sample .env
+
+
+To run the application, use:
+$ flask --app main run --debug
