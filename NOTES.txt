@@ -7,7 +7,7 @@ To install flask, run the following command in your Visual Studio Code - Termina
 $ mkdir myproject
 $ cd myproject
 $ py -3 -m venv .venv
-$ .venv\Scripts\activate
+$ .venv\Scripts\activate.ps1
 
 
 To install Flask and its dependencies:
