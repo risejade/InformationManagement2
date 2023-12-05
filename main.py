@@ -1,29 +1,58 @@
-from flask import *
-from users import get_all_users, get_user_by_id, create_user, update_user, delete_user
+from flask import Flask, render_template, request, jsonify
 from flask_mysqldb import MySQL
-from database import set_database
 from dotenv import load_dotenv
-from os import getenv 
+from os import getenv
 
 app = Flask(__name__)
 
 load_dotenv()
 
-app.config["MYSQL_HOST"] = getenv("MYSQL_HOST")
-#app.config["MYSQL_PORT"] = int(getenv("MYSQL_PORT"))
-app.config["MYSQL_USER"] = getenv("MYSQL_USER")
-app.config["MYSQL_PASSWORD"] = getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = getenv("MYSQL_DB")
-# to return results as dictionaries and not an array
-app.config["MYSQL_CURSORCLASS"] = getenv("MYSQL_CURSORCLASS")
-app.config["MYSQL_AUTOCOMMIT"] = True if getenv("MYSQL_AUTOCOMMIT") == "True" else False
+# Get environment variables
+MYSQL_HOST = getenv("MYSQL_HOST")
+MYSQL_USER = getenv("MYSQL_USER")
+MYSQL_PASSWORD = getenv("MYSQL_PASSWORD")
+MYSQL_DB = getenv("MYSQL_DB")
+MYSQL_CURSORCLASS = getenv("MYSQL_CURSORCLASS")
+MYSQL_AUTOCOMMIT = True if getenv("MYSQL_AUTOCOMMIT") == "True" else False
+
+# MySQL connection setup
+app.config["MYSQL_HOST"] = MYSQL_HOST
+app.config["MYSQL_USER"] = MYSQL_USER
+app.config["MYSQL_PASSWORD"] = MYSQL_PASSWORD
+app.config["MYSQL_DB"] = MYSQL_DB
+app.config["MYSQL_CURSORCLASS"] = MYSQL_CURSORCLASS
+app.config["MYSQL_AUTOCOMMIT"] = MYSQL_AUTOCOMMIT
 
 mysql = MySQL(app)
-set_database(mysql)
+
+# Function to execute queries
+def execute_query(query, data=None):
+    msg = ""
+    cursor = None
+    try:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query, data)
+        
+        # Fetch all results if the query is a SELECT query
+        if cursor.with_rows:
+            result = cursor.fetchall()
+        else:
+            result = None
+
+        if MYSQL_AUTOCOMMIT:
+            mysql.connection.commit()
+
+        msg = {"message": "Query executed successfully", "result": result}
+    except mysql.connector.Error as err:
+        msg = {"error": f"Failed to execute query: {err}"}
+    finally:
+        if cursor:
+            cursor.close()
+        return msg
 
 @app.route("/")
 def index():
-    return render_template("index.html");
+    return render_template("index.html")
 
 @app.route("/add_student")
 def add_student():
@@ -38,22 +67,33 @@ def submit_student():
         email = request.form["email"]
         phone_number = request.form["phone_number"]
 
-        # Insert student data into the database
-        try:
-            cursor = mysql.cursor()
-            cursor.execute(
-                "INSERT INTO Students (student_name, date_of_birth, address, email, phone_number) VALUES (%s, %s, %s, %s, %s)",
-                (student_name, date_of_birth, address, email, phone_number)
-            )
-            mysql.commit()
-            msg = "Student added successfully"
-        except mysql.connector.Error as err:
-            msg = f"Failed to add student: {err}"
-        finally:
-            cursor.close()
-            return render_template("success_record.html", msg=msg)
+        query = "INSERT INTO Students (student_name, date_of_birth, address, email, phone_number) VALUES (%s, %s, %s, %s, %s)"
+        data = (student_name, date_of_birth, address, email, phone_number)
+
+        msg = execute_query(query, data)
+
+        return render_template("success_record.html", msg=msg)
     else:
-        return "Method Not Allowed", 405  # Return method not allowed if the request is not POST
+        return "Method Not Allowed", 405
+
+@app.route("/student_info")
+def student_info():
+    query = "SELECT * FROM Students"
+    
+    cursor = None
+    students = None
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute(query)
+        students = cursor.fetchall()
+    except mysql.connector.Error as err:
+        msg = f"Failed to fetch student records: {err}"
+        return render_template("success_record.html", msg=msg)
+    finally:
+        if cursor:
+            cursor.close()
+
+    return render_template("student_info.html", students=students)
 
 
 @app.route("/courses", methods=["POST"])

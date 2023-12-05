@@ -1,63 +1,90 @@
 <!DOCTYPE html>
- <html>
- <head>
-   <title>student info</title>
+<html>
 
- <style>
-  body{
-   background-image: url('/static/4.jpg');
-   background-size: cover;
-   text-align: center;
-   font-weight: bold;
-   font-size: larger;
+<head>
+    <title>Student Info</title>
 
-  }
+    <style>
+        body {
+            background-image: url('/static/4.jpg');
+            background-size: cover;
+            text-align: center;
+            font-weight: bold;
+            font-size: larger;
 
-  a:link, a:visited {
-  background-color: #f44336;
-  color: white;
-  padding: 14px 25px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  }
+        }
 
-  a:hover, a:active {
-  background-color: red;
-  }
+        a:link,
+        a:visited {
+            background-color: #f44336;
+            color: white;
+            padding: 14px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
 
- </style>
+        a:hover,
+        a:active {
+            background-color: red;
+        }
 
- </head>
- <body>
- <h1 style="color: green">Student  Details</h1><br>
+        h1 {
+            color: green;
+        }
 
- <table align="center" cellspacing = "2" cellpadding = "13" border = "10" width="700" >
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 80%;
+            background-color: white;
+        }
 
- <thead>
- <td>ID</td>
- <td>Name</td>
- <td>Email</td>
- <td>Gender</td>
- <td>Contact</td>
- <td>D.O.B</td>
- <td>Address</td>
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
- </thead>
- {% for row in rows %}
- <tr>
- <td>{{row["id"]}}</td>
- <td>{{row["name"]}}</td>
- <td>{{row["email"]}}</td>
- <td>{{row["gender"]}}</td>
- <td>{{row["contact"]}}</td>
- <td>{{row["dob"]}}</td>
- <td>{{row["address"]}}</td>
- </tr>
- {% endfor %}   
- </table>
- <br><br>
- <a href="/">Go back to home page</a>
- </body>
- </html> 
- 
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Student Details</h1>
+    <br>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date of Birth</th>
+                <th>Address</th>
+                <th>Contact Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.student_name }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.date_of_birth }}</td>
+                <td>{{ student.address }}</td>
+                <td>{{ student.phone_number }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br><br>
+    <a href="/">Go back to the home page</a>
+</body>
+
+</html>
