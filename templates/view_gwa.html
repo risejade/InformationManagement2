@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Information</title>
+    <!-- Link Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            background-size: cover;
+            text-align: center;
+            font-weight: bold;
+            font-size: larger;
+            font-family: Arial, sans-serif; /* Added a generic font-family */
+            margin: 50px;
+            padding: 0;
+        }
+
+        h1 {
+            color: black;
+            animation: glow 2s ease-in-out infinite alternate;
+            margin-top: 20px; /* Added margin to the top of h1 */
+        }
+
+            /* Glowing animation */
+            @keyframes glow {
+                from {
+                    text-shadow: 0 0 5px #2bc0e4, 0 0 10px #2bc0e4, 0 0 15px #2bc0e4;
+                }
+                to {
+                    text-shadow: 0 0 5px #2bc0e4, 0 0 10px #eaecc6, 0 0 15px #ff00b3;
+                }
+            }
+
+        .navbar {
+            padding: 10px 0;
+        }
+
+        .navbar a {
+            color: white;
+	        background: #0e587b;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            padding: 8px 16px;
+            margin: 0 5px;
+            outline: 1px solid white;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            color: #0e587b;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 95%; /* Adjusted table width */
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden; /* Added overflow to the table */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Added box shadow for a card-like effect */
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px; /* Increased padding */
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .add,
+        .update,
+        .delete {
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .update {
+            background-color: #007bff; /* Changed update button color */
+        }
+
+        .delete {
+            background-color: #dc3545; /* Changed delete button color */
+        }
+
+        .add {
+            background-color: #28a745; /* Changed add button color */
+        }
+
+        .add:hover,
+        .update:hover,
+        .delete:hover {
+            filter: brightness(90%); /* Slightly reduce brightness on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Student Management System</h1>
+    <div class="navbar">
+        <a href="/index.html">Home</a>
+        <a href="/add_gwa">Add General Weighted Average</a>
+        <a href="/logout">Logout</a>
+    </div>
+    <br>
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>GWA ID</th>
+                <th>Student Name</th>
+                <th>Student General Weighted Average</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for gwa in gwasa %}
+            <tr>
+                <td>{{ gwa.id }}</td>
+                <td>{{ gwa.student_name }}</td>
+                <td>{{ gwa.student_gwa }}</td>
+                <td>
+                    <a href="/edit_gwa/{{ gwa.id }}" class="update">Edit</a>
+                    <a href="/delete_gwa/{{ gwa.id }}" class="delete">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><br>
+</body>
+
+</html>

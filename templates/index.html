@@ -1,36 +1,112 @@
 <!DOCTYPE html>
- <html>
- <head>
- <title>Home</title>
- <style>
+<html>
+<head>
+    <title>Home</title>
+    <!-- Link Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            background-size: cover;
+            text-align: center;
+            padding-top: 50px; /* Padding to move content below the navbar */
+        }
 
-  body{
-   background-image: url('/static/1.jpg');
-   background-size: cover;
-   text-align: center;
-  }
+        h1 {
+            color: #fff; /* Change the color of the heading */
+        }
 
-  a:link, a:visited {
-  background-color: #f44336;
-  color: white;
-  padding: 14px 25px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  }
+        a:link,
+        a:visited {
+            color: white;
+            background: #0e587b;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 20px;
+            outline: 1px solid white;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
 
-  a:hover, a:active {
-  background-color: red;
-  }
+        a:hover,
+        a:active {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+        }
 
- </style>
- </head>
- <body>
 
- <br><br><h1> Student Management System </h1>
- <br><br><a href="/add_student">Add Student</a><br><br>
- <br><br><a href="/delete_student">Delete Student </a><br><br>
- <br><br><a href ="/student_info">View Student Details</a><br><br>
+        @keyframes glow {
+        from {
+            text-shadow: 0 0 5px #2bc0e4, 0 0 10px #2bc0e4, 0 0 15px #2bc0e4;
+        }
+        to {
+            text-shadow: 0 0 5px #eaecc6, 0 0 10px #eaecc6, 0 0 15px #eaecc6;
+        }
+    }
+    </style>
+</head>
+<body>
 
- </body>
- </html>
+<!-- Navbar using Bootstrap -->
+<nav class="navbar navbar-dark bg-dark">
+    <span class="navbar-brand mb-0 h1">Student Management System</span>
+    {% if 'username' in session %}
+        <span class="navbar-text" style="animation: glow 2s ease-in-out infinite alternate;">
+            Welcome, {{ session['username'] }}!
+        </span>
+    {% else %}
+        <span class="navbar-text">
+            Welcome!
+        </span>
+    {% endif %}
+</nav>
+
+<!-- Content -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <br>
+            <a href="/add_student" class="button1" role="button">Add Student</a>
+            <a href="/student_info" class="button1" role="button">View Student Details</a>
+            <a href="/logout" class="button1" role="button">Logout</a>
+        </div>
+         <div class="row mt-4">
+            <div class="col-md-3">
+               <img src="https://cit.edu/wp-content/uploads/2023/07/SAL-Building.jpg" class="img-fluid mb-3" alt="Students" >
+            </div>
+            <div class="col-md-3">
+                <img src="https://cit.edu/wp-content/uploads/2023/07/Fine-Dining.jpg" class="img-fluid mb-3" alt="Students">
+            </div>
+            <div class="col-md-3">
+                <img src="https://cit.edu/wp-content/uploads/2023/07/Covered-Court.jpg" class="img-fluid mb-3" alt="Students">
+            </div>
+            <div class="col-md-3">
+                <img src="https://cit.edu/wp-content/uploads/2023/07/Learning-Resource-and-Activity-Center-02.jpg" class="img-fluid mb-3" alt="Students">
+            </div>
+        </div>
+
+        <div class="row mt-5">
+         <div class="col-md-3">
+            <img src="https://cit.edu/wp-content/uploads/2023/07/Learning-Resource-and-Activity-Center-05.jpg" alt="Students" width="260" height="175">
+         </div>
+         <div class="col-md-3">
+             <img src="https://cit.edu/wp-content/uploads/2023/07/Gymnasium.jpg" class="img-fluid mb-3" alt="Students">
+         </div>
+         <div class="col-md-3">
+             <img src="https://cit.edu/wp-content/uploads/2023/07/CHE-Laboratory.jpg" class="img-fluid mb-3" alt="Students">
+         </div>
+         <div class="col-md-3">
+             <img src="https://cit.edu/wp-content/uploads/2023/07/Elementary-Building.jpg" class="img-fluid mb-3" alt="Students">
+         </div>
+     </div>
+
+    </div>
+</div>
+
+<!-- Link Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

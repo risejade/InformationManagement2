@@ -1,77 +1,136 @@
 <!DOCTYPE html>
- <html>
- <head>
- <title>Add Student</title>
+<html>
+<head>
+    <title>Add Student</title>
+    <style>
+        body {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            background-size: cover;
+            text-align: center;
+            font-family: Arial, sans-serif; /* Added a generic font-family */
+            margin: 0;
+            padding: 0;
+        }
 
-  <style>
-   body{
-    background-image: url('/static/2.jpg');
-    background-size: cover;
-    text-align: center;
-   }
+        h1 {
+            margin-top: 20px; /* Added margin to the top of h1 */
+        }
 
-   input[type=text] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-   }
+        form {
+            width: 60%;
+            margin: 0 auto;
+        }
 
-   input[type=email] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-   }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
 
-   input[type=submit] {
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
 
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-   }
+        input[type=text],
+        input[type=email] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
 
-   input[type=submit]:hover {
-    background-color: #45a049;
-   }
-  </style>
- </head>
- <body>
-     <h1>Student Information</h1>
-        <form action = "/submit_student" method="post">
+        input[type=submit] {
+            width: 100%;
+            color: white;
+	        background: #0e587b;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            outline: 2px solid white;
+            transition: background-color 0.3s ease;
+        }
 
-                <table align="center" cellspacing = "2" cellpadding = "13" border = "10" width="700">
+        input[type=submit]:hover {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            color: #0e587b;
+        }
 
-                    <tr>
-                        <td>Name</td>
-                        <td><input type="text" name="student_name"></td>
-                    </tr>
-                    <tr>
-                        <td>Email</td>
-                        <td><input type="email" name="email"></td>
-                    </tr>
-                    <tr>
-                        <td>Date of Birth</td>
-                        <td><input type="text" name="date_of_birth"></td>
-                    </tr>
-                    <tr>
-                        <td>Address</td>
-                        <td><input type="text" name="address"></td>
-                    </tr>
-                    <tr>
-                        <td>Contact Number</td>
-                        <td><input type="text" name="phone_number"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><input type="submit" value="Submit"></td>
-                    </tr>
-                </table>
-            </form>
-    </body>
- </html>  
+        .button4,
+        .button5 {
+            width: auto; /* Adjust the width as needed */
+            color: white;
+            background: #0e587b;
+            padding: 14px 20px;
+            margin: 8px 310px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none; 
+            font-size: 16px;
+            outline: 2px solid white;
+            transition: background-color 0.3s ease;
+        }
+
+        .button4:hover,
+        .button5:hover {
+            background: linear-gradient(to left, #2bc0e4, #eaecc6);
+            color: #0e587b;
+        }
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px; /* Adjust the top margin as needed */
+}
+
+
+    </style>
+</head>
+<body>
+    <h1>Student Information</h1>
+    <div class="button-container">
+    <a href="/index.html" class="button4" role="button">Home</a>
+    <a href="/student_info" class="button5" role="button">View Students</a>
+    </div>
+    <form action="/submit_student" method="post">
+        <table align="center" cellspacing="2" cellpadding="13" border="10" width="700">
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="student_name" placeholder="Enter fullname here"></td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td><input type="email" name="institutional_email" placeholder="Enter institutional email here"></td>
+            </tr>
+            <tr>
+                <td>Date of Birth</td>
+                <td><input type="text" name="birth_date" placeholder="YYYY-MM-DD"></td>
+            </tr>
+            <tr>
+                <td>Address</td>
+                <td><input type="text" name="address" placeholder="Enter address here"></td>
+            </tr>
+            <tr>
+                <td>Program</td>
+                <td><input type="text" name="program" placeholder="Enter program here"></td>
+            </tr>
+            <tr>
+                <td>Year</td>
+                <td><input type="text" name="year" placeholder="Enter year level here, e.g 1st, 2nd, 3rd, 4th, 5th "></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Submit"></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
