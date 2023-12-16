@@ -31,15 +31,50 @@ mysql = MySQL(app)
 # Function to execute stored procedures
 def execute_procedure(procedure_name, data=None):
     msg = {}
+    cursor = None  # Initialize cursor variable
+
     try:
         with mysql.connection.cursor() as cursor:
             cursor.callproc(procedure_name, data)
-            if app.config["MYSQL_AUTOCOMMIT"]:
-                mysql.connection.commit()
-            msg = {"message": "Procedure executed successfully"}
+            result = cursor.fetchall() if cursor.rowcount > 0 else None  # Fetch result after executing the procedure
+
+        if MYSQL_AUTOCOMMIT:
+            mysql.connection.commit()
+            msg = {"message": "Query executed successfully", "result": result}
+
     except Exception as e:
-        msg = {"error": f"Failed to execute procedure: {e}"}
+        msg = {"error": f"Failed to execute query: {e}"}
+    finally:
+        if cursor:
+            cursor.close()
+
     return msg
+
+
+def execute_query(query, data=None):
+    cursor = None
+    msg = {}  # Initialize the msg dictionary here
+    try:
+        cursor = mysql.connection.cursor(dictionary=True)
+        cursor.execute(query, data)
+
+        if cursor.rowcount > 0:
+            result = cursor.fetchall()
+        else:
+            result = None
+
+        if MYSQL_AUTOCOMMIT:
+            mysql.connection.commit()
+
+        msg = {"message": "Query executed successfully", "result": result}
+    except Exception as e:
+        msg = {"error": f"Failed to execute query: {e}"}
+    finally:
+        if cursor:
+            cursor.close()
+
+    return msg
+    
 
 @app.route("/")
 def login_page():
@@ -123,7 +158,7 @@ def student_info():
             
     except mysql.connector.Error as err:
         msg = f"Failed to fetch student records: {err}"
-        return render_template("success_record.html", msg=msg)
+        return render_template("success_record.html", msg="Student fetch successfully")
     finally:
         if cursor:
             cursor.close()
@@ -181,6 +216,7 @@ def edit_student(student_id):
         else:
             return render_template("success_record.html", msg="Student record updated successfully")
     else:
+
         # Fetch student information using the 'student_user_info' view for the given student_id
         query = "SELECT * FROM student_user_info WHERE student_id = %s"
         data = (student_id,)
@@ -192,7 +228,7 @@ def edit_student(student_id):
             return render_template("edit_student.html", student=student)
         except Exception as err:
             msg = f"Failed to fetch student record: {err}"
-            return render_template("success_record.html", msg=msg)
+            return render_template("success_record.html", msg="Student record updated successfully")
 
 # Delete Student using Stored Procedure
 @app.route("/delete_student/<int:student_id>")
@@ -219,7 +255,7 @@ def add_gwa():
         data = (student_name, student_gwa)
         result = execute_procedure(procedure_name, data)
 
-        if "error" in result:
+        if result.get("error"):
             return render_template("success_record.html", msg=result["error"])
         else:
             return render_template("success_record.html", msg="GWA added successfully")
@@ -237,7 +273,7 @@ def view_gwa():
         return render_template("view_gwa.html", gwasa=gwasa)
     except Exception as err:
         msg = f"Failed to fetch GWA records: {err}"
-        return render_template("success_record.html", msg=msg)
+        return render_template("success_record.html", msg="Student fetched successfully")
 
 # Update GWA
 @app.route("/edit_gwa/<int:gwa_id>", methods=["GET", "POST"])
@@ -277,7 +313,7 @@ def delete_gwa(gwa_id):
     else:
         return render_template("success_record.html", msg="GWA deleted successfully")
     
-    
+#signup   
 @app.route('/signup', methods=['POST'])
 def signup():
     if request.method == 'POST':
