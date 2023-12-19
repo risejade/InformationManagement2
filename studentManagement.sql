@@ -8,7 +8,8 @@ CREATE TABLE Students (
     `address` VARCHAR(255) NOT NULL DEFAULT '',
     `institutional_email` VARCHAR(100) NOT NULL DEFAULT '',
     `program` VARCHAR(100) NOT NULL DEFAULT '',
-    `year` VARCHAR(20) NOT NULL DEFAULT ''
+    `year` VARCHAR(20) NOT NULL DEFAULT '',
+    `age` INT NOT NULL DEFAULT 0
 )ENGINE=InnoDB ;
 
 CREATE TABLE Student_Audit_Log (
@@ -82,6 +83,9 @@ CREATE PROCEDURE delete_student(
     IN p_id INT
 )
 BEGIN
+    DELETE FROM Student_Audit_Log
+    WHERE student_id = p_id;
+
     DELETE FROM Students
     WHERE student_id = p_id;
 END$$
@@ -114,6 +118,7 @@ DELIMITER ;
 
 DELIMITER $$$
 
+-- Create the procedure for create gwa
 CREATE PROCEDURE create_gwa(
   IN p_student_name varchar(100),
   IN p_student_gwa float
@@ -124,11 +129,19 @@ BEGIN
   SELECT LAST_INSERT_ID() AS id;
 END$$$
 
-CREATE PROCEDURE read_gwa()
-BEGIN
-  SELECT * FROM gwa;
-END$$$
+-- Create the procedure for read gwa
+DELIMITER $$
 
+CREATE PROCEDURE read_gwa(
+  IN gwa_id INT
+)
+BEGIN
+  SELECT * FROM gwa WHERE id = gwa_id;
+END $$
+
+DELIMITER ;
+
+-- Create the procedure for update gwa
 CREATE PROCEDURE update_gwa(
   IN p_id INT,
   IN p_student_name varchar(100),
@@ -142,6 +155,7 @@ BEGIN
   SELECT p_id AS id;
 END$$$
 
+-- Create the procedure for delete gwa
 CREATE PROCEDURE delete_gwa(
   IN p_id INT
 )

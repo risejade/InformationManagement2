@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, jsonify, app
+from flask import Flask, render_template, request, session, redirect, jsonify, app, url_for
 from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 from os import getenv
@@ -28,6 +28,7 @@ app.config["MYSQL_AUTOCOMMIT"] = MYSQL_AUTOCOMMIT
 
 mysql = MySQL(app)
 
+#Benavente's Work
 # Function to execute stored procedures
 def execute_procedure(procedure_name, data=None):
     msg = {}
@@ -42,31 +43,6 @@ def execute_procedure(procedure_name, data=None):
             mysql.connection.commit()
             msg = {"message": "Query executed successfully", "result": result}
 
-    except Exception as e:
-        msg = {"error": f"Failed to execute query: {e}"}
-    finally:
-        if cursor:
-            cursor.close()
-
-    return msg
-
-
-def execute_query(query, data=None):
-    cursor = None
-    msg = {}  # Initialize the msg dictionary here
-    try:
-        cursor = mysql.connection.cursor(dictionary=True)
-        cursor.execute(query, data)
-
-        if cursor.rowcount > 0:
-            result = cursor.fetchall()
-        else:
-            result = None
-
-        if MYSQL_AUTOCOMMIT:
-            mysql.connection.commit()
-
-        msg = {"message": "Query executed successfully", "result": result}
     except Exception as e:
         msg = {"error": f"Failed to execute query: {e}"}
     finally:
@@ -97,13 +73,33 @@ def index():
     if "username" in session:  # Check if the user is logged in
         return render_template("index.html")
     else:
-        return redirect("/")  # Redirect to login if user is not logged in
+        return redirect("/")
 
 
 @app.route("/add_student")
 def add_student():
     return render_template("add_student.html")
 
+# Function to calculate the age of a student based on birth date
+@app.route("/calculate_age", methods=["GET", "POST"])
+def calculate_age():
+    if request.method == "POST":
+        birth_date = request.form["birth_date"]
+
+        query = "SELECT calculate_age(%s) AS age"
+        data = (birth_date,)
+
+        result = execute_procedure(query, data)
+
+        if result.get("result"):
+            age = result["result"][0]["age"]
+            return render_template("age.html", age=age)
+        else:
+            return render_template("error.html", error="Failed to calculate age")
+    else:
+        # Handle GET requests to this route (e.g., display an error or redirect)
+        return render_template("error.html", error="Method Not Allowed")
+    
 # Add Student using Stored Procedure
 @app.route("/submit_student", methods=["POST"])
 def submit_student():
@@ -175,30 +171,13 @@ def verify_user(username, password):
         return True
     else:
         return False
-    
-#login condition
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form['username']
-    password = request.form['password']
 
-    cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-    user = cursor.fetchone()
-
-    if user:
-        # Set the username in the session upon successful login
-        session['username'] = user['username']
-        # Redirect to the home page or wherever you want to go after successful login
-        return redirect('/index')
-    else:
-        # Invalid credentials, handle appropriately (e.g., show error message)
-        return "Invalid username or password"  # You can render a template or redirect to the login page with an error message
-
-# Edit Student using Stored Procedure
+#Bacalso's Work
+# edit student
 @app.route("/edit_student/<int:student_id>", methods=["GET", "POST"])
 def edit_student(student_id):
     if request.method == "POST":
+        # Retrieve form data
         student_name = request.form["student_name"]
         date_of_birth = request.form["birth_date"]
         address = request.form["address"]
@@ -216,19 +195,22 @@ def edit_student(student_id):
         else:
             return render_template("success_record.html", msg="Student record updated successfully")
     else:
-
-        # Fetch student information using the 'student_user_info' view for the given student_id
-        query = "SELECT * FROM student_user_info WHERE student_id = %s"
+        # Fetch student information using the 'student_id'
+        query = "SELECT * FROM Students WHERE student_id = %s"
         data = (student_id,)
+        
         try:
-            cursor = mysql.connection.cursor()
+            cursor = mysql.connection.cursor()  # Ensure to use dictionary=True to fetch results as dictionaries
             cursor.execute(query, data)
-            student = cursor.fetchone()
+            student = cursor.fetchone()  # Fetch the student details
+            
+            # Close the cursor after fetching the data
             cursor.close()
+            
             return render_template("edit_student.html", student=student)
         except Exception as err:
             msg = f"Failed to fetch student record: {err}"
-            return render_template("success_record.html", msg="Student record updated successfully")
+            return render_template("success_record.html", msg=msg)
 
 # Delete Student using Stored Procedure
 @app.route("/delete_student/<int:student_id>")
@@ -249,7 +231,7 @@ def delete_student(student_id):
 def add_gwa():
     if request.method == "POST":
         student_name = request.form["student_name"]
-        student_gwa = float(request.form["student_gwa"]) # Assuming input will be an integer
+        student_gwa = float(request.form["student_gwa"]) 
 
         procedure_name = "create_gwa"
         data = (student_name, student_gwa)
@@ -275,31 +257,38 @@ def view_gwa():
         msg = f"Failed to fetch GWA records: {err}"
         return render_template("success_record.html", msg="Student fetched successfully")
 
+
+#Tejano's work
 # Update GWA
-@app.route("/edit_gwa/<int:gwa_id>", methods=["GET", "POST"])
+@app.route('/edit_gwa/<int:gwa_id>', methods=['GET', 'POST'])
 def edit_gwa(gwa_id):
-    if request.method == "POST":
-        student_name = request.form["student_name"]
-        student_gwa = float(request.form["student_gwa"])  # Convert to float for decimal values
+    if request.method == 'GET':
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute("SELECT * FROM gwa WHERE id = %s", (gwa_id,))
+            gwa_data = cursor.fetchone()
+            cursor.close()
+            
+            return render_template('edit_gwa.html', gwa=gwa_data)
+        except Exception as err:
+            msg = f"Failed to fetch GWA record: {err}"
+            return render_template("success_record.html", msg=msg)
+    elif request.method == 'POST':
+        try:
+            cursor = mysql.connection.cursor()
+            student_name = request.form['student_name']
+            student_gwa = request.form['student_gwa']
 
-        procedure_name = "update_gwa"
-        data = (gwa_id, student_name, student_gwa)
-        result = execute_procedure(procedure_name, data)
+            # Update the GWA data in the database
+            update_query = "UPDATE gwa SET student_name = %s, student_gwa = %s WHERE id = %s"
+            cursor.execute(update_query, (student_name, student_gwa, gwa_id))
+            mysql.connection.commit()
+            cursor.close()
 
-        if "error" in result:
-            return render_template("success_record.html", msg=result["error"])
-        else:
-            return render_template("success_record.html", msg="GWA updated successfully")
-    else:
-        procedure_name = "read_gwa_by_id"
-        data = (gwa_id,)
-        result = execute_procedure(procedure_name, data)
-
-        if "error" in result:
-            return render_template("success_record.html", msg=result["error"])
-        else:
-            gwa = result
-            return render_template("edit_gwa.html", gwa=gwa)
+            return redirect(url_for('view_gwa'))  # Redirect to view_gwa route or any other desired endpoint
+        except Exception as err:
+            msg = f"Failed to update GWA record: {err}"
+            return render_template("success_record.html", msg=msg)
 
 # Delete GWA
 @app.route("/delete_gwa/<int:gwa_id>")
@@ -341,36 +330,37 @@ def signup():
 
     return jsonify({'message': 'Method Not Allowed'}), 405
 
+#login condition
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
+    user = cursor.fetchone()
+
+    if user:
+       
+        session['username'] = user['username']
+      
+        return redirect('/index')
+    else:
+        
+        return "Invalid username or password"  
+    
 #logout
 @app.route("/logout")
 def logout():
-    # Remove the username from the session if it exists
+   
     if "username" in session:
         session.pop("username")
     
-    # Redirect the user to the login page
+    
     return redirect("/")
 
 
-# Function to calculate the age of a student based on birth date
-@app.route("/calculate_age", methods=["GET", "POST"])
-def calculate_age():
-    if request.method == "POST":
-        birth_date = request.form["birth_date"]
 
-        query = "SELECT calculate_age(%s) AS age"
-        data = (birth_date,)
-
-        result = execute_procedure(query, data)
-
-        if result.get("result"):
-            age = result["result"][0]["age"]
-            return render_template("age.html", age=age)
-        else:
-            return render_template("error.html", error="Failed to calculate age")
-    else:
-        # Handle GET requests to this route (e.g., display an error or redirect)
-        return render_template("error.html", error="Method Not Allowed")
     
 if __name__ == '__main__':
     app.run(debug=True)
